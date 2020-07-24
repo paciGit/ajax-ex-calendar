@@ -2,12 +2,43 @@ function init() {
 	console.log('Test');
 
   // Variabili generali
+  var next = $(".next");
+  var prev = $(".prev");
+  var monthList= $(".month-list");
   var baseMonth = moment('2018-01-01');
-  var source = $('#template').html();
+  var source = $('#day-template').html();
   var template = Handlebars.compile(source);
 
   printMonth(template, baseMonth);
   printHoliday(baseMonth);
+
+  // Possibilità di cambiare mese
+  prev.click(function(){
+    if(baseMonth.month()== 0){
+      alert("Non puoi andare oltre!");
+    }
+    else{
+      baseMonth.substract(1, "M");
+      monthList.children().remove();
+      printMonth(template, baseMonth);
+      printHoliday(baseMonth);
+
+    }
+
+  })
+
+  next.click(function(){
+    if(baseMonth.month() == 11){
+      alert("Non puoi andare oltre!");
+    }
+    else{
+      baseMonth.add(1, "M");
+      monthList.children().remove();
+      printMonth(template, baseMonth);
+      printHoliday(baseMonth);
+
+    }
+  })
 }
 
 $(document).ready(init);
@@ -36,7 +67,7 @@ function printMonth(template, date) {
     // Template
     var context = {
       class: 'day',
-      day: thisDate.format('DD MMMM'),
+      day: thisDate.format('DD'),
       completeDate: thisDate.format('YYYY-MM-DD')
     };
 
@@ -47,6 +78,7 @@ function printMonth(template, date) {
 
 // Ottieni e stampa festività
 function printHoliday(date) {
+  // Richiamo l'API
   $.ajax({
     url: 'https://flynn.boolean.careers/exercises/api/holidays' ,
     method: 'Get',
